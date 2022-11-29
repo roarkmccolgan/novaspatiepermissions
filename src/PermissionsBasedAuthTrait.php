@@ -180,7 +180,7 @@ trait PermissionsBasedAuthTrait
 	public static function hasPermissionsTo(Request $request, $ability)
 	{
 	
-		if($request->GetRequestUri()==config('nova.path')."/login" || $request->GetRequestUri()==config('nova.path')."/password/reset" || preg_match('/'.str_replace('/','\/',config('nova.path').'/password/reset/').'[^*]+/', $request->GetRequestUri())){
+		if($request->GetRequestUri()==config('nova.path')."/login" || preg_match('/'.str_replace('/','\/',config('nova.path').'/password/reset/').'(?:\/?)(?:[^\/]+)?/', $request->GetRequestUri())){
 			return true;
 		}
 		
