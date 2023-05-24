@@ -179,10 +179,24 @@ trait PermissionsBasedAuthTrait
 
 	public static function hasPermissionsTo(Request $request, $ability)
 	{
-		if($request->GetRequestUri()==config('nova.path')."/login" || $request->GetRequestUri()==config('nova.path')."/password/reset" || preg_match('/'.str_replace('/','\/',config('nova.path').'/password/reset/').'(?:\/?)(?:[^\/]+)?/', $request->GetRequestUri())){
+		$matchUrlPatterns = function ($url) {
+			$patterns = [
+				'/\/nova\/login\b/',                                          
+				'/\/nova\/password\/reset\b/',                                
+				'/\/nova\/password\/reset\/[\w\d]+(\?email=[^&\s]+)?\b/',
+			];
+
+			foreach ($patterns as $pattern) {
+				if (preg_match($pattern, $url)) {
+					return true;
+				}
+			}
+			return false;
+		};
+
+		if ($matchUrlPatterns($request->GetRequestUri())) {
 			return true;
 		}
-		
 		
 		if (isset(static::$permissionsForAbilities[$ability])) {
 			return $request->user()->can(static::$permissionsForAbilities[$ability]);
